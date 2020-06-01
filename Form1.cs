@@ -53,19 +53,11 @@ namespace Coach
         bool _secguardstatus;
 
         string pathforgamefolder = "";
+        string restartmessage = "Any change of AI functionality require a restart of game. Everything in the \"Other\" section can be done realtime.";
 
         public Form1()
         {
             InitializeComponent();
-
-            if (File.Exists(pathforgamefolder + @"\DATA\UI\MOVIES\AMD_IDENT.USM"))
-            {
-                btnDisableIntroMovies.Text = "Disable Intro movies";
-            }
-            else
-            {
-                btnDisableIntroMovies.Text = "Enable Intro movies";
-            }
 
             Process[] proc = Process.GetProcessesByName("AI");
             if (proc.Length == 0)
@@ -78,6 +70,16 @@ namespace Coach
                 process = proc[0];
                 string _aipath = process.Modules[0].FileName.Replace("AI.exe","");
                 pathforgamefolder = _aipath;
+
+                if (File.Exists(pathforgamefolder + @"\DATA\UI\MOVIES\AMD_IDENT.USM"))
+                {
+                    btnDisableIntroMovies.Text = "Disable Intro movies";
+                }
+                else
+                {
+                    btnDisableIntroMovies.Text = "Enable Intro movies";
+                }
+
 
                 if (process != null)
                 {
@@ -373,6 +375,8 @@ namespace Coach
                 btnSecGuards.Text = "Disable Security Guards";
                 _secguardstatus = true;
             }
+
+            MessageBox.Show(restartmessage);
         }
         private void btnCivilian_Click(object sender, EventArgs e)
         {
@@ -390,6 +394,8 @@ namespace Coach
                 btnCivilian.Text = "Disable Civilians (hostile)";
                 _civstatus = true;
             }
+
+            MessageBox.Show(restartmessage);
         }
         private void btnRiotGuards_Click(object sender, EventArgs e)
         {
@@ -407,6 +413,8 @@ namespace Coach
                 btnRiotGuards.Text = "Disable Riot Guards";
                 _riotguardstatus = true;
             }
+
+            MessageBox.Show(restartmessage);
         }
         private void btnFaceHugger_Click(object sender, EventArgs e)
         {
@@ -424,6 +432,8 @@ namespace Coach
                 btnFaceHugger.Text = "Disable Facehuggers";
                 _facehuggerstatus = true;
             }
+
+            MessageBox.Show(restartmessage);
         }
         private void btnHeavyAndroid_Click(object sender, EventArgs e)
         {
@@ -441,6 +451,8 @@ namespace Coach
                 btnHeavyAndroid.Text = "Disable Hazmat Androids";
                 _heavyandroidstatus = true;
             }
+
+            MessageBox.Show(restartmessage);
         }
         private void btnAndroid_Click(object sender, EventArgs e)
         {
@@ -458,6 +470,8 @@ namespace Coach
                 btnAndroid.Text = "Disable Normal Androids";
                 _androidstatus = true;
             }
+
+            MessageBox.Show(restartmessage);
         }
 
         private void btnAlien_Click(object sender, EventArgs e)
@@ -474,6 +488,8 @@ namespace Coach
                 btnAlien.Text = "Disable Alien";
                 _alienstatus = true;
             }
+
+            MessageBox.Show(restartmessage);
  
         }
         public static void ReplaceData(string filename, int position, byte[] data)
@@ -666,11 +682,19 @@ namespace Coach
             if (File.Exists(pathforgamefolder + @"\DATA\UI\MOVIES\FOX_IDENT.USM"))
             {
                 File.Move(pathforgamefolder + @"\DATA\UI\MOVIES\FOX_IDENT.USM", pathforgamefolder + @"\DATA\UI\MOVIES\FOX_IDENT.USM.bak");
-                btnDisableIntroMovies.Text = "Enable Intro movies";
             }
             else
             {
                 File.Move(pathforgamefolder + @"\DATA\UI\MOVIES\FOX_IDENT.USM.bak", pathforgamefolder + @"\DATA\UI\MOVIES\FOX_IDENT.USM");
+            }
+
+            if (btnDisableIntroMovies.Text == "Disable Intro movies")
+            {
+
+                btnDisableIntroMovies.Text = "Enable Intro movies";
+            }
+            else
+            {
                 btnDisableIntroMovies.Text = "Disable Intro movies";
             }
 
