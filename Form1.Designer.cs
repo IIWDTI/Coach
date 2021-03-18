@@ -49,7 +49,7 @@
             // 
             // btnHackerTool
             // 
-            this.btnHackerTool.Location = new System.Drawing.Point(6, 96);
+            this.btnHackerTool.Location = new System.Drawing.Point(7, 96);
             this.btnHackerTool.Name = "btnHackerTool";
             this.btnHackerTool.Size = new System.Drawing.Size(215, 23);
             this.btnHackerTool.TabIndex = 4;
@@ -59,7 +59,7 @@
             // 
             // BtnTorch
             // 
-            this.BtnTorch.Location = new System.Drawing.Point(6, 137);
+            this.BtnTorch.Location = new System.Drawing.Point(7, 137);
             this.BtnTorch.Name = "BtnTorch";
             this.BtnTorch.Size = new System.Drawing.Size(215, 23);
             this.BtnTorch.TabIndex = 19;
@@ -77,7 +77,7 @@
             "Medium",
             "Hard",
             "Nightmare"});
-            this.comboBox1.Location = new System.Drawing.Point(6, 58);
+            this.comboBox1.Location = new System.Drawing.Point(7, 58);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(215, 21);
             this.comboBox1.TabIndex = 20;
@@ -155,7 +155,7 @@
             // 
             // btnEnableGasMask
             // 
-            this.btnEnableGasMask.Location = new System.Drawing.Point(6, 176);
+            this.btnEnableGasMask.Location = new System.Drawing.Point(7, 176);
             this.btnEnableGasMask.Name = "btnEnableGasMask";
             this.btnEnableGasMask.Size = new System.Drawing.Size(215, 23);
             this.btnEnableGasMask.TabIndex = 28;
@@ -165,7 +165,7 @@
             // 
             // btnDisableIntroMovies
             // 
-            this.btnDisableIntroMovies.Location = new System.Drawing.Point(6, 19);
+            this.btnDisableIntroMovies.Location = new System.Drawing.Point(7, 19);
             this.btnDisableIntroMovies.Name = "btnDisableIntroMovies";
             this.btnDisableIntroMovies.Size = new System.Drawing.Size(215, 23);
             this.btnDisableIntroMovies.TabIndex = 29;
@@ -182,7 +182,7 @@
             this.groupBox1.Controls.Add(this.btnFaceHugger);
             this.groupBox1.Controls.Add(this.btnCivilian);
             this.groupBox1.Controls.Add(this.btnRiotGuards);
-            this.groupBox1.Location = new System.Drawing.Point(13, 227);
+            this.groupBox1.Location = new System.Drawing.Point(13, 231);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(229, 296);
             this.groupBox1.TabIndex = 30;
@@ -198,7 +198,7 @@
             this.groupBox2.Controls.Add(this.comboBox1);
             this.groupBox2.Location = new System.Drawing.Point(13, 12);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(228, 209);
+            this.groupBox2.Size = new System.Drawing.Size(228, 213);
             this.groupBox2.TabIndex = 31;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Other";
@@ -207,14 +207,14 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(254, 536);
+            this.ClientSize = new System.Drawing.Size(256, 541);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "AI v1.3";
+            this.Text = "AI v1.5";
             this.groupBox1.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.ResumeLayout(false);

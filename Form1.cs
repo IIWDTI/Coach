@@ -3,11 +3,17 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using System.Xml;
 
 namespace Coach
 {
     public partial class Form1 : Form
     {
+
+        string SteamHash = "bb0d932f267c0ce1b1045e68a3d12ffb"; //Steam version x.x
+        string EpicHash1 = "1d91aa77a1fdb86673a501696c8ad23c"; //EPIC STORE Version x.x
+        string currenthash = "";
+
         [Flags]
         public enum ProcessAccessFlags : uint
         {
@@ -44,13 +50,7 @@ namespace Coach
         string _riotguardfile;
         string _civfile;
         string _secguardfile;
-        bool _alienstatus;
-        bool _androidstatus;
-        bool _heavyandroidstatus;
-        bool _facehuggerstatus;
-        bool _riotguardstatus;
-        bool _civstatus;
-        bool _secguardstatus;
+
 
         string pathforgamefolder = "";
         string restartmessage = "Any change of AI functionality require a restart of game. Everything in the \"Other\" section can be done realtime.";
@@ -58,6 +58,8 @@ namespace Coach
         public Form1()
         {
             InitializeComponent();
+
+            
 
             Process[] proc = Process.GetProcessesByName("AI");
             if (proc.Length == 0)
@@ -67,27 +69,41 @@ namespace Coach
             }
             else
             {
+                Hash hash = new Hash();
+
                 process = proc[0];
+                currenthash = hash.GetHash(process.Modules[0].FileName);
+
+
+                
                 string _aipath = process.Modules[0].FileName.Replace("AI.exe","");
                 pathforgamefolder = _aipath;
 
-                if (File.Exists(pathforgamefolder + @"\DATA\UI\MOVIES\AMD_IDENT.USM"))
+
+                if (File.Exists(pathforgamefolder + @"\DATA\UI\MOVIES\AMD_IDENT.USM") || File.Exists(pathforgamefolder + @"\DATA\UI\MOVIES\CA_IDENT.USM") || File.Exists(pathforgamefolder + @"\DATA\UI\MOVIES\FOX_IDENT.USM"))
                 {
-                    btnDisableIntroMovies.Text = "Disable Intro movies";
+                    btnDisableIntroMovies.Text = "Disable intro movies";
                 }
                 else
                 {
-                    btnDisableIntroMovies.Text = "Enable Intro movies";
+                    btnDisableIntroMovies.Text = "Enable intro movies";
                 }
 
 
-                if (process != null)
+                    if (process != null)
                 {
                     if (process.ProcessName == "AI")
                     {
+                        IntPtr pointer = (IntPtr)0x0;
+                        if (currenthash == SteamHash)
+                        {
 
-
-                        IntPtr pointer = GetPointerAddress(new int[] { 0x88 }, 0x12F0C88, (IntPtr)0x20);
+                            pointer = GetPointerAddress(new int[] { 0x88 }, 0x12F0C88, (IntPtr)0x24);
+                        }
+                        else if (currenthash == EpicHash1)
+                        {
+                            pointer = GetPointerAddress(new int[] { 0x80 }, 0x130D1A8, (IntPtr)0xC4);
+                        }
 
                         byte[] tempbuffer;
                         int bytesRead;
@@ -96,27 +112,27 @@ namespace Coach
 
 
 
-                        if (tempbuffer[4] == 0 && tempbuffer[8] == 0)
+                        if (tempbuffer[0] == 0 && tempbuffer[4] == 0)
                         {
                             comboBox1.SelectedIndex = 1;
 
                         }
-                        else if (tempbuffer[4] == 1 && tempbuffer[8] == 1)
+                        else if (tempbuffer[0] == 1 && tempbuffer[4] == 1)
                         {
                             comboBox1.SelectedIndex = 2;
 
                         }
-                        else if (tempbuffer[4] == 2 && tempbuffer[8] == 2)
+                        else if (tempbuffer[0] == 2 && tempbuffer[4] == 2)
                         {
                             comboBox1.SelectedIndex = 3;
 
                         }
-                        else if (tempbuffer[4] == 3 && tempbuffer[8] == 3)
+                        else if (tempbuffer[0] == 3 && tempbuffer[4] == 3)
                         {
 
                             comboBox1.SelectedIndex = 4;
                         }
-                        else if (tempbuffer[4] == 4 && tempbuffer[8] == 4)
+                        else if (tempbuffer[0] == 4 && tempbuffer[4] == 4)
                         {
                             comboBox1.SelectedIndex = 0;
 
@@ -125,27 +141,29 @@ namespace Coach
 
                         if (File.Exists(_aipath + @"\AI.exe"))
                         {
-                            _alienfile = _aipath + @"\DATA\CHR_INFO\ATTRIBUTES\ALIEN.BML";
+
+                            
+
+                                _alienfile = _aipath + @"\DATA\CHR_INFO\ATTRIBUTES\ALIEN.BML";
+                            
+                            
 
                             if (File.Exists(_alienfile))
                             {
-                                if (!File.Exists(_alienfile + ".BAK"))
-                                {
-                                    File.Copy(_alienfile, _alienfile + ".BAK");
-                                }
 
-                                byte[] _aliendata = File.ReadAllBytes(_alienfile);
-                                string _changedaliendata = System.Text.Encoding.Default.GetString(_aliendata, 8584, _aliendata.Length - 8584);
-                                _aliendata = null;
-                                if (_changedaliendata.Contains("alien_behave"))
+
+
+                                string data = GetBehaviorTree(_alienfile);
+
+
+                                if (data.Contains("alien_behave"))
                                 {
                                     btnAlien.Text = "Disable Alien";
-                                    _alienstatus = true;
+
                                 }
-                                else if (_changedaliendata.Contains("NoBehaviour"))
+                                else if (data.Contains("NoBehaviour"))
                                 {
                                     btnAlien.Text = "Enable Alien";
-                                    _alienstatus = false;
                                 }
                             }
                             else
@@ -160,23 +178,18 @@ namespace Coach
                             if (File.Exists(_androidfile))
                             {
 
-                                if (!File.Exists(_androidfile + ".BAK"))
-                                {
-                                    File.Copy(_androidfile, _androidfile + ".BAK");
-                                }
+                                string data = GetBehaviorTree(_androidfile);
 
-                                byte[] _androiddata = File.ReadAllBytes(_androidfile);
-                                string _changedandroiddata = System.Text.Encoding.Default.GetString(_androiddata, 9273, _androiddata.Length - 9273);
-                                _androiddata = null;
-                                if (_changedandroiddata.Contains("android_behave"))
+
+                                if (data.Contains("android_behave"))
                                 {
                                     btnAndroid.Text = "Disable Normal Androids";
-                                    _androidstatus = true;
+
                                 }
-                                else if (_changedandroiddata.Contains("NoBehaviour"))
+                                else if (data.Contains("NoBehaviour"))
                                 {
                                     btnAndroid.Text = "Enable Normal Androids";
-                                    _androidstatus = false;
+
                                 }
                             }
                             else
@@ -189,23 +202,18 @@ namespace Coach
 
                             if (File.Exists(_heavyandroidfile))
                             {
-                                if (!File.Exists(_heavyandroidfile + ".BAK"))
-                                {
-                                    File.Copy(_heavyandroidfile, _heavyandroidfile + ".BAK");
-                                }
+                                string data = GetBehaviorTree(_heavyandroidfile);
 
-                                byte[] _heavyandroiddata = File.ReadAllBytes(_heavyandroidfile);
-                                string _changedheavyandroiddata = System.Text.Encoding.Default.GetString(_heavyandroiddata, 8090, _heavyandroiddata.Length - 8090);
-                                _heavyandroiddata = null;
-                                if (_changedheavyandroiddata.Contains("android_behave"))
+
+                                if (data.Contains("android_behave"))
                                 {
                                     btnHeavyAndroid.Text = "Disable Hazmat Androids";
-                                    _heavyandroidstatus = true;
+
                                 }
-                                else if (_changedheavyandroiddata.Contains("NoBehaviour"))
+                                else if (data.Contains("NoBehaviour"))
                                 {
                                     btnHeavyAndroid.Text = "Enable Hazmat Androids";
-                                    _heavyandroidstatus = false;
+
                                 }
                             }
                             else
@@ -218,24 +226,18 @@ namespace Coach
 
                             if (File.Exists(_facehuggerfile))
                             {
+                                string data = GetBehaviorTree(_facehuggerfile);
 
-                                if (!File.Exists(_facehuggerfile + ".BAK"))
-                                {
-                                    File.Copy(_facehuggerfile, _facehuggerfile + ".BAK");
-                                }
 
-                                byte[] _facehuggerdata = File.ReadAllBytes(_facehuggerfile);
-                                string _changedfacehuggerdata = System.Text.Encoding.Default.GetString(_facehuggerdata, 6950, _facehuggerdata.Length - 6950);
-                                _facehuggerdata = null;
-                                if (_changedfacehuggerdata.Contains("facehugger_behave"))
+                                if (data.Contains("facehugger_behave"))
                                 {
                                     btnFaceHugger.Text = "Disable Facehuggers";
-                                    _facehuggerstatus = true;
+   
                                 }
-                                else if (_changedfacehuggerdata.Contains("NoBehaviour"))
+                                else if (data.Contains("NoBehaviour"))
                                 {
                                     btnFaceHugger.Text = "Enable Facehuggers";
-                                    _facehuggerstatus = false;
+    
                                 }
                             }
                             else
@@ -248,23 +250,18 @@ namespace Coach
 
                             if (File.Exists(_riotguardfile))
                             {
-                                if (!File.Exists(_riotguardfile + ".BAK"))
-                                {
-                                    File.Copy(_riotguardfile, _riotguardfile + ".BAK");
-                                }
+                                string data = GetBehaviorTree(_riotguardfile);
 
-                                byte[] _riotguarddata = File.ReadAllBytes(_riotguardfile);
-                                string _changedriotguarddata = System.Text.Encoding.Default.GetString(_riotguarddata, 6116, 0x11);
-                                _riotguarddata = null;
-                                if (_changedriotguarddata.Contains("NPC_Human_behave"))
+
+                                if (data.Contains("NPC_Human_behave"))
                                 {
                                     btnRiotGuards.Text = "Disable Riot Guards";
-                                    _riotguardstatus = true;
+
                                 }
-                                else if (_changedriotguarddata.Contains("NoBehaviour"))
+                                else if (data.Contains("NoBehaviour"))
                                 {
                                     btnRiotGuards.Text = "Enable Riot Guards";
-                                    _riotguardstatus = false;
+
                                 }
                             }
                             else
@@ -277,23 +274,18 @@ namespace Coach
 
                             if (File.Exists(_civfile))
                             {
-                                if (!File.Exists(_civfile + ".BAK"))
-                                {
-                                    File.Copy(_civfile, _civfile + ".BAK");
-                                }
+                                string data = GetBehaviorTree(_civfile);
 
-                                byte[] _civdata = File.ReadAllBytes(_civfile);
-                                string _changedcivdata = System.Text.Encoding.Default.GetString(_civdata, 33283, 0x11);
-                                _civdata = null;
-                                if (_changedcivdata.Contains("NPC_Human_behave"))
+
+                                if (data.Contains("NPC_Human_behave"))
                                 {
                                     btnCivilian.Text = "Disable Civilians (hostile)";
-                                    _civstatus = true;
+
                                 }
-                                else if (_changedcivdata.Contains("NoBehaviour"))
+                                else if (data.Contains("NoBehaviour"))
                                 {
                                     btnCivilian.Text = "Enable Civilians (hostile)";
-                                    _civstatus = false;
+
                                 }
                             }
                             else
@@ -307,23 +299,18 @@ namespace Coach
                             if (File.Exists(_secguardfile))
                             {
 
-                                if (!File.Exists(_secguardfile + ".BAK"))
-                                {
-                                    File.Copy(_secguardfile, _secguardfile + ".BAK");
-                                }
+                                string data = GetBehaviorTree(_secguardfile);
 
-                                byte[] _secguarddata = File.ReadAllBytes(_secguardfile);
-                                string _changedsecguarddata = System.Text.Encoding.Default.GetString(_secguarddata, 6101, 0x11);
-                                _secguarddata = null;
-                                if (_changedsecguarddata.Contains("NPC_Human_behave"))
+
+                                if (data.Contains("NPC_Human_behave"))
                                 {
                                     btnSecGuards.Text = "Disable Security Guards";
-                                    _secguardstatus = true;
+
                                 }
-                                else if (_changedsecguarddata.Contains("NoBehaviour"))
+                                else if (data.Contains("NoBehaviour"))
                                 {
                                     btnSecGuards.Text = "Enable Security Guards";
-                                    _secguardstatus = false;
+
                                 }
                             }
                             else
@@ -361,114 +348,124 @@ namespace Coach
         }
         private void btnSecGuards_Click(object sender, EventArgs e)
         {
-            if (_secguardstatus)
-            {
- 
-                ReplaceData(_secguardfile, 6101, new byte[] { 0x4E, 0x6F, 0x42, 0x65, 0x68, 0x61, 0x76, 0x69, 0x6F, 0x75, 0x72, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 });
-                btnSecGuards.Text = "Enable Security Guards";
-                _secguardstatus = false;
-            }
-            else if (!_secguardstatus)
-            {
 
-                ReplaceData(_secguardfile, 6101, new byte[] { 0x4E, 0x50, 0x43, 0x5F, 0x48, 0x75, 0x6D, 0x61, 0x6E, 0x5F, 0x62, 0x65, 0x68, 0x61, 0x76, 0x65, 0x00 });
+            string data = GetBehaviorTree(_secguardfile);
+
+            if (data.Contains("NoBehaviour"))
+            {
+                SetBehaviorTree(_secguardfile, "NPC_Human_behave");
                 btnSecGuards.Text = "Disable Security Guards";
-                _secguardstatus = true;
+
+            }
+            else
+            {
+                SetBehaviorTree(_secguardfile, "NoBehaviour");
+                btnSecGuards.Text = "Enable Security Guards";
+
             }
 
             MessageBox.Show(restartmessage);
         }
         private void btnCivilian_Click(object sender, EventArgs e)
         {
-            if (_civstatus)
-            {
 
-                ReplaceData(_civfile, 33283, new byte[] { 0x4E, 0x6F, 0x42, 0x65, 0x68, 0x61, 0x76, 0x69, 0x6F, 0x75, 0x72, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 });
-                btnCivilian.Text = "Enable Civilians (hostile)";
-                _civstatus = false;
-            }
-            else if (!_civstatus)
-            {
+            string data = GetBehaviorTree(_civfile);
 
-                ReplaceData(_civfile, 33283, new byte[] { 0x4E, 0x50, 0x43, 0x5F, 0x48, 0x75, 0x6D, 0x61, 0x6E, 0x5F, 0x62, 0x65, 0x68, 0x61, 0x76, 0x65, 0x00 });
+            if (data.Contains("NoBehaviour"))
+            {
+                SetBehaviorTree(_civfile, "NPC_Human_behave");
                 btnCivilian.Text = "Disable Civilians (hostile)";
-                _civstatus = true;
+
+            }
+            else
+            {
+                SetBehaviorTree(_civfile, "NoBehaviour");
+                btnCivilian.Text = "Enable Civilians (hostile)";
+
             }
 
             MessageBox.Show(restartmessage);
         }
         private void btnRiotGuards_Click(object sender, EventArgs e)
         {
-            if (_riotguardstatus)
-            {
 
-                ReplaceData(_riotguardfile, 6116, new byte[] { 0x4E, 0x6F, 0x42, 0x65, 0x68, 0x61, 0x76, 0x69, 0x6F, 0x75, 0x72, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 });
-                btnRiotGuards.Text = "Enable Riot Guards";
-                _riotguardstatus = false;
-            }
-            else if (!_riotguardstatus)
+            string data = GetBehaviorTree(_riotguardfile);
+
+            if (data.Contains("NoBehaviour"))
             {
- 
-                ReplaceData(_riotguardfile, 6116, new byte[] { 0x4E, 0x50, 0x43, 0x5F, 0x48, 0x75, 0x6D, 0x61, 0x6E, 0x5F, 0x62, 0x65, 0x68, 0x61, 0x76, 0x65, 0x00 });
+                SetBehaviorTree(_riotguardfile, "NPC_Human_behave");
                 btnRiotGuards.Text = "Disable Riot Guards";
-                _riotguardstatus = true;
+
             }
+            else
+            {
+                SetBehaviorTree(_riotguardfile, "NoBehaviour");
+                btnRiotGuards.Text = "Enable Riot Guards";
+
+            }
+
 
             MessageBox.Show(restartmessage);
         }
         private void btnFaceHugger_Click(object sender, EventArgs e)
         {
-            if (_facehuggerstatus)
+            string data = GetBehaviorTree(_facehuggerfile);
+
+            if (data.Contains("NoBehaviour"))
             {
- 
-                ReplaceData(_facehuggerfile, 6950, new byte[] { 0x4E, 0x6F, 0x42, 0x65, 0x68, 0x61, 0x76, 0x69, 0x6F, 0x75, 0x72, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 });
-                btnFaceHugger.Text = "Enable Facehuggers";
-                _facehuggerstatus = false;
-            }
-            else if (!_facehuggerstatus)
-            {
- 
-                ReplaceData(_facehuggerfile, 6950, new byte[] { 0x66, 0x61, 0x63, 0x65, 0x68, 0x75, 0x67, 0x67, 0x65, 0x72, 0x5F, 0x62, 0x65, 0x68, 0x61, 0x76, 0x65, 0x00, 0x00 });
+                SetBehaviorTree(_facehuggerfile, "facehugger_behave");
                 btnFaceHugger.Text = "Disable Facehuggers";
-                _facehuggerstatus = true;
+
             }
+            else
+            {
+                SetBehaviorTree(_facehuggerfile, "NoBehaviour");
+                btnFaceHugger.Text = "Enable Facehuggers";
+
+            }
+
+
+
 
             MessageBox.Show(restartmessage);
         }
         private void btnHeavyAndroid_Click(object sender, EventArgs e)
         {
-            if (_heavyandroidstatus)
-            {
 
-                ReplaceData(_heavyandroidfile, 8090, new byte[] { 0x4E, 0x6F, 0x42, 0x65, 0x68, 0x61, 0x76, 0x69, 0x6F, 0x75, 0x72, 0x00, 0x00, 0x00, });
-                btnHeavyAndroid.Text = "Enable Hazmat Androids";
-                _heavyandroidstatus = false;
-            }
-            else if (!_heavyandroidstatus)
-            {
+            string data = GetBehaviorTree(_heavyandroidfile);
 
-                ReplaceData(_heavyandroidfile, 8090, new byte[] { 0x61, 0x6E, 0x64, 0x72, 0x6F, 0x69, 0x64, 0x5F, 0x62, 0x65, 0x68, 0x61, 0x76, 0x65 });
+            if (data.Contains("NoBehaviour"))
+            {
+                SetBehaviorTree(_heavyandroidfile, "android_behave");
                 btnHeavyAndroid.Text = "Disable Hazmat Androids";
-                _heavyandroidstatus = true;
+
             }
+            else
+            {
+                SetBehaviorTree(_heavyandroidfile, "NoBehaviour");
+                btnHeavyAndroid.Text = "Enable Hazmat Androids";
+
+            }
+
 
             MessageBox.Show(restartmessage);
         }
         private void btnAndroid_Click(object sender, EventArgs e)
         {
-            if (_androidstatus)
-            {
 
-                ReplaceData(_androidfile, 9273, new byte[] { 0x4E, 0x6F, 0x42, 0x65, 0x68, 0x61, 0x76, 0x69, 0x6F, 0x75, 0x72, 0x00, 0x00, 0x00, });
-                btnAndroid.Text = "Enable Normal Androids";
-                _androidstatus = false;
-            }
-            else if (!_androidstatus)
+            string data = GetBehaviorTree(_androidfile);
+
+            if (data.Contains("NoBehaviour"))
             {
-  
-                ReplaceData(_androidfile, 9273, new byte[] { 0x61, 0x6E, 0x64, 0x72, 0x6F, 0x69, 0x64, 0x5F, 0x62, 0x65, 0x68, 0x61, 0x76, 0x65 });
+                SetBehaviorTree(_androidfile, "android_behave");
                 btnAndroid.Text = "Disable Normal Androids";
-                _androidstatus = true;
+
+            }
+            else
+            {
+                SetBehaviorTree(_androidfile, "NoBehaviour");
+                btnAndroid.Text = "Enable Normal Androids";
+
             }
 
             MessageBox.Show(restartmessage);
@@ -476,18 +473,22 @@ namespace Coach
 
         private void btnAlien_Click(object sender, EventArgs e)
         {
-            if (_alienstatus)
+
+            string data = GetBehaviorTree(_alienfile);
+
+            if (data.Contains("NoBehaviour"))
             {
-                ReplaceData(_alienfile, 8584, new byte[] { 0x4E, 0x6F, 0x42, 0x65, 0x68, 0x61, 0x76, 0x69, 0x6F, 0x75, 0x72, 0x00 });
-                btnAlien.Text = "Enable Alien";
-                _alienstatus = false;
-            }
-            else if (!_alienstatus)
-            {
-                ReplaceData(_alienfile, 8584, new byte[] { 0x61, 0x6C, 0x69, 0x65, 0x6E, 0x5F, 0x62, 0x65, 0x68, 0x61, 0x76, 0x65 });
+                SetBehaviorTree(_alienfile, "alien_behave");
                 btnAlien.Text = "Disable Alien";
-                _alienstatus = true;
+
             }
+            else
+            {
+                SetBehaviorTree(_alienfile, "NoBehaviour");
+                btnAlien.Text = "Enable Alien";
+
+            }
+
 
             MessageBox.Show(restartmessage);
  
@@ -553,7 +554,15 @@ namespace Coach
             {
                 if (process.ProcessName == "AI")
                 {
-                    WriteMem(process, new byte[] { 0x3, 0x0,0x0,0x0,0x1 }, GetPointerAddress(new int[] { 0x44 }, 0x12F0C88, (IntPtr)0x39C));
+                    if (currenthash == SteamHash)
+                    {
+
+                        WriteMem(process, new byte[] { 0x3, 0x0, 0x0, 0x0, 0x1 }, GetPointerAddress(new int[] { 0x44 }, 0x12F0C88, (IntPtr)0x39C));
+                    }
+                    else if (currenthash == EpicHash1)
+                    {
+                        WriteMem(process, new byte[] { 0x3, 0x0, 0x0, 0x0, 0x1 }, GetPointerAddress(new int[] { 0x18 }, 0x1253E5C, (IntPtr)0xD0C));
+                    }
                     btnHackerTool.Text = "Done!";
                 }
                 else
@@ -575,7 +584,14 @@ namespace Coach
             {
                 if (process.ProcessName == "AI")
                 {
-                    WriteMem(process, new byte[] { 0x3, 0x0, 0x0, 0x0, 0x1 }, GetPointerAddress(new int[] { 0x44 }, 0x12F0C88, (IntPtr)0x394));
+                    if (currenthash == SteamHash)
+                    {
+                        WriteMem(process, new byte[] { 0x3, 0x0, 0x0, 0x0, 0x1 }, GetPointerAddress(new int[] { 0x44 }, 0x12F0C88, (IntPtr)0x394));
+                    }
+                    else if (currenthash == EpicHash1)
+                    {
+                        WriteMem(process, new byte[] { 0x3, 0x0, 0x0, 0x0, 0x1 }, GetPointerAddress(new int[] { 0x18 }, 0x1253E5C, (IntPtr)0xD04));
+                    }
                     BtnTorch.Text = "Done!";
                 }
                 else
@@ -621,8 +637,14 @@ namespace Coach
                         tempbuffer = new byte[] { 0x4, 0x0, 0x0, 0x0, 0x4 };
                     }
 
-                    WriteMem(process, tempbuffer, GetPointerAddress(new int[] { 0x88 }, 0x12F0C88, (IntPtr)0x24));
-
+                    if (currenthash == SteamHash)
+                    {
+                        WriteMem(process, tempbuffer, GetPointerAddress(new int[] { 0x88 }, 0x12F0C88, (IntPtr)0x24));
+                    }
+                    else if (currenthash == EpicHash1)
+                    {
+                        WriteMem(process, tempbuffer, GetPointerAddress(new int[] { 0x80 }, 0x130D1A8, (IntPtr)0xC4));
+                    }
                 }
                 else
                 {
@@ -643,7 +665,17 @@ namespace Coach
             {
                 if (process.ProcessName == "AI")
                 {
-                    WriteMem(process, new byte[] { 0x1 }, GetPointerAddress(new int[] { 0x44 }, 0x12F0C88, (IntPtr)0x390));
+                    if(currenthash == SteamHash)
+                    {
+                        WriteMem(process, new byte[] { 0x1 }, GetPointerAddress(new int[] { 0x44 }, 0x12F0C88, (IntPtr)0x390));
+                    }
+                    else if(currenthash == EpicHash1)
+                    {
+
+                        WriteMem(process, new byte[] { 0x1 }, GetPointerAddress(new int[] { 0x18 }, 0x1253E5C, (IntPtr)0xD00));
+                    }
+
+                    
                     btnEnableGasMask.Text = "Done!";
                 }
                 else
@@ -661,44 +693,145 @@ namespace Coach
 
         private void btnDisableIntroMovies_Click(object sender, EventArgs e)
         {
-            if (File.Exists(pathforgamefolder + @"\DATA\UI\MOVIES\AMD_IDENT.USM"))
+
+            if (File.Exists(pathforgamefolder + @"\DATA\UI\MOVIES\AMD_IDENT.USM") || File.Exists(pathforgamefolder + @"\DATA\UI\MOVIES\CA_IDENT.USM") || File.Exists(pathforgamefolder + @"\DATA\UI\MOVIES\FOX_IDENT.USM"))
             {
-                File.Move(pathforgamefolder + @"\DATA\UI\MOVIES\AMD_IDENT.USM", pathforgamefolder + @"\DATA\UI\MOVIES\AMD_IDENT.USM.bak");
+                try
+                {
+                    File.Move(pathforgamefolder + @"\DATA\UI\MOVIES\AMD_IDENT.USM", pathforgamefolder + @"\DATA\UI\MOVIES\AMD_IDENT.USM.bak");
+                }
+                catch { }
+
+                try
+                {
+                    File.Move(pathforgamefolder + @"\DATA\UI\MOVIES\CA_IDENT.USM", pathforgamefolder + @"\DATA\UI\MOVIES\CA_IDENT.USM.bak");
+                }
+                catch { }
+
+                try
+                {
+                    File.Move(pathforgamefolder + @"\DATA\UI\MOVIES\FOX_IDENT.USM", pathforgamefolder + @"\DATA\UI\MOVIES\FOX_IDENT.USM.bak");
+                }
+                catch { }
+
+                btnDisableIntroMovies.Text = "Enable Intro Movies";
+
             }
             else
             {
-                File.Move(pathforgamefolder + @"\DATA\UI\MOVIES\AMD_IDENT.USM.bak", pathforgamefolder + @"\DATA\UI\MOVIES\AMD_IDENT.USM");
-            }
+                try
+                {
+                    File.Move(pathforgamefolder + @"\DATA\UI\MOVIES\AMD_IDENT.USM.bak", pathforgamefolder + @"\DATA\UI\MOVIES\AMD_IDENT.USM");
+                }
+                catch { }
+                try
+                {
+                    File.Move(pathforgamefolder + @"\DATA\UI\MOVIES\CA_IDENT.USM.bak", pathforgamefolder + @"\DATA\UI\MOVIES\CA_IDENT.USM");
+                }
+                catch { }
+                try
+                {
+                    File.Move(pathforgamefolder + @"\DATA\UI\MOVIES\FOX_IDENT.USM.bak", pathforgamefolder + @"\DATA\UI\MOVIES\FOX_IDENT.USM");
+                }
+                catch { }
 
-            if (File.Exists(pathforgamefolder + @"\DATA\UI\MOVIES\CA_IDENT.USM"))
-            {
-                File.Move(pathforgamefolder + @"\DATA\UI\MOVIES\CA_IDENT.USM", pathforgamefolder + @"\DATA\UI\MOVIES\CA_IDENT.USM.bak");
-            }
-            else
-            {
-                File.Move(pathforgamefolder + @"\DATA\UI\MOVIES\CA_IDENT.USM.bak", pathforgamefolder + @"\DATA\UI\MOVIES\CA_IDENT.USM");
-            }
-
-            if (File.Exists(pathforgamefolder + @"\DATA\UI\MOVIES\FOX_IDENT.USM"))
-            {
-                File.Move(pathforgamefolder + @"\DATA\UI\MOVIES\FOX_IDENT.USM", pathforgamefolder + @"\DATA\UI\MOVIES\FOX_IDENT.USM.bak");
-            }
-            else
-            {
-                File.Move(pathforgamefolder + @"\DATA\UI\MOVIES\FOX_IDENT.USM.bak", pathforgamefolder + @"\DATA\UI\MOVIES\FOX_IDENT.USM");
-            }
-
-            if (btnDisableIntroMovies.Text == "Disable Intro movies")
-            {
-
-                btnDisableIntroMovies.Text = "Enable Intro movies";
-            }
-            else
-            {
-                btnDisableIntroMovies.Text = "Disable Intro movies";
+                btnDisableIntroMovies.Text = "Disable Intro Movies";
             }
 
         }
+
+
+        public string GetBehaviorTree(string filename)
+        {
+
+            FileStream strm = File.OpenRead(filename);
+            BinaryReader br = new BinaryReader(strm);
+            AlienBML.BML bML = new AlienBML.BML();
+            bML.ReadBML(br);
+            strm.Close();
+            br.Close();
+
+            string xmlout = "";
+            bML.ExportXML(ref xmlout);
+            XmlDocument doc = new XmlDocument();
+            doc.LoadXml(xmlout);
+            var tag = doc.GetElementsByTagName("Behavior_Tree");
+            return tag[0].InnerText;
+
+        }
+
+        public void SetBehaviorTree(string filename, string newbehavior)
+        {
+
+            FileStream strm = File.OpenRead(filename);
+            BinaryReader br = new BinaryReader(strm);
+            AlienBML.BML bML = new AlienBML.BML();
+            bML.ReadBML(br);
+            strm.Close();
+            br.Close();
+
+            string xmlout = "";
+            bML.ExportXML(ref xmlout);
+            bML = null;
+            XmlDocument doc = new XmlDocument();
+            doc.LoadXml(xmlout);
+            var tag = doc.GetElementsByTagName("Behavior_Tree");
+            tag[0].InnerText = newbehavior;
+
+
+            string data = XMLToString(doc);
+
+            Stream stream = GenerateStreamFromString(data);
+        
+            br = new BinaryReader(stream);
+
+            bML = new AlienBML.BML();
+            bML.ReadXML(br);
+            stream.Close();
+            br.Close();
+
+            if (File.Exists(filename))
+            {
+                File.Delete(filename);
+            }
+
+            BinaryWriter bw = new BinaryWriter(File.OpenWrite(filename));
+
+
+            bML.ExportBML(bw);
+            
+            bw.Close();
+
+        }
+
+        public string XMLToString(XmlDocument xmldata)
+        {
+
+            XmlWriterSettings settings = new XmlWriterSettings();
+            settings.Indent = true;
+            settings.NewLineChars = Environment.NewLine;
+            settings.NewLineHandling = NewLineHandling.Replace;
+
+            using (var stringWriter = new StringWriter())
+            using (var xmlTextWriter = XmlWriter.Create(stringWriter, settings))
+            {
+                xmldata.WriteTo(xmlTextWriter);
+                xmlTextWriter.Flush();
+                return stringWriter.GetStringBuilder().ToString();
+            }
+
+        }
+
+        public Stream GenerateStreamFromString(string s)
+        {
+            MemoryStream stream = new MemoryStream();
+            StreamWriter writer = new StreamWriter(stream);
+            writer.Write(s);
+            writer.Flush();
+            stream.Position = 0;
+            return stream;
+        }
+
     }
 
 }
