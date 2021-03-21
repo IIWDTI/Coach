@@ -1,12 +1,12 @@
 ## Unlock the lvl 3 hack tool and torch from start of game, and a function to make enemies friendly, unlock gas mask from start of game, disable intro movies, Experimental: Change the difficulty on the fly, but it might not work correctly.
 
-Functions:
+###### Functions:
 
-Disable all the enemies in the game.
-Unlock the lvl 3 hack tool and torch, so it's possible to open specific doors from the beginning of the game.
-Unlock Gas mask from beginning of the game.
-Disable Intro movies.
-Experimental: Change the difficulty on the fly, might not work correctly.
+* Disable all the enemies in the game.
+* Unlock the lvl 3 hack tool and torch, so it's possible to open specific doors from the beginning of the game.
+* Unlock Gas mask from beginning of the game.
+* Disable Intro movies.
+* Experimental: Change the difficulty on the fly, might not work correctly.
 
 
 There is a few exceptions to the "No Enemies" modification, looking straight into a egg will get you killed, because its a scripted event, 
@@ -15,15 +15,15 @@ and walking under a vent where the xenomorph is drooling from will also get you 
 All other enemies will just stand still, they can be killed and looted. Idle androids on the floor can also be killed and looted.
 
 
-Tip:
+###### Tip:
 Remember to restart the game or go all the way back to main menu when you disable/enable any AI's.
 When you made the changes you like, you don't need to keep the program running.
 
-Bugs (SPOILERS):
+###### Bugs (SPOILERS):
 In mission 7, where the android needs to help you find a spare part, it will just stand still, just kill it and take its keycard.
 In mission 10, If the Civilians have been disabled, In the start of the mission, the game will not load, Enable Civilians go back to main menu, and load the chapter again, civilians can be disabled later.
 
-Requirements:
+###### Requirements:
 Steam version of the game, works with the latest version as of "june 8th 2019".
 The tool is NOT tested with a cracked version of the game, this might not work, neither will i support it.
 There might be problems with other tools and/or mods, a clean installation of the game is preferred.
