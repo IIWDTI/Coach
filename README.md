@@ -1,4 +1,4 @@
-Unlock the lvl 3 hack tool and torch from start of game, and a function to make enemies friendly, unlock gas mask from start of game, disable intro movies, Experimental: Change the difficulty on the fly, but it might not work correctly.
+###### Unlock the lvl 3 hack tool and torch from start of game, and a function to make enemies friendly, unlock gas mask from start of game, disable intro movies, Experimental: Change the difficulty on the fly, but it might not work correctly.
 
 Functions:
 
