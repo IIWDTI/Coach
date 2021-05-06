@@ -50,6 +50,7 @@ namespace Coach
         string _riotguardfile;
         string _civfile;
         string _secguardfile;
+        string _innocentfile;
 
 
         string pathforgamefolder = "";
@@ -142,9 +143,38 @@ namespace Coach
                         if (File.Exists(_aipath + @"\AI.exe"))
                         {
 
-                            
+                            _innocentfile = _aipath + @"\DATA\CHR_INFO\ATTRIBUTES\INNOCENT.BML";
 
-                                _alienfile = _aipath + @"\DATA\CHR_INFO\ATTRIBUTES\ALIEN.BML";
+
+
+                            if (File.Exists(_innocentfile))
+                            {
+
+
+
+                                string data = GetBehaviorTree(_innocentfile);
+
+
+                                if (data.Contains("NPC_innocent_behave"))
+                                {
+                                    btnInnocent.Text = "Disable Civilians (innocent)";
+
+                                }
+                                else if (data.Contains("NoBehaviour"))
+                                {
+                                    btnInnocent.Text = "Enable Civilians (innocent)";
+                                }
+                            }
+                            else
+                            {
+                                MessageBox.Show("File \"INNOCENT.BML\" could not be found.");
+                                btnInnocent.Enabled = false;
+                            }
+
+
+
+
+                            _alienfile = _aipath + @"\DATA\CHR_INFO\ATTRIBUTES\ALIEN.BML";
                             
                             
 
@@ -346,6 +376,8 @@ namespace Coach
 
 
         }
+
+
         private void btnSecGuards_Click(object sender, EventArgs e)
         {
 
@@ -493,14 +525,7 @@ namespace Coach
             MessageBox.Show(restartmessage);
  
         }
-        public static void ReplaceData(string filename, int position, byte[] data)
-        {
-            using (Stream stream = File.Open(filename, FileMode.Open))
-            {
-                stream.Position = position;
-                stream.Write(data, 0, data.Length);
-            }
-        }
+
 
         public IntPtr GetPointerAddress(int[] _offsets, int _pointer, IntPtr _last_offset)
         {
@@ -693,49 +718,82 @@ namespace Coach
 
         private void btnDisableIntroMovies_Click(object sender, EventArgs e)
         {
-
-            if (File.Exists(pathforgamefolder + @"\DATA\UI\MOVIES\AMD_IDENT.USM") || File.Exists(pathforgamefolder + @"\DATA\UI\MOVIES\CA_IDENT.USM") || File.Exists(pathforgamefolder + @"\DATA\UI\MOVIES\FOX_IDENT.USM"))
+            DialogResult dialogResult = MessageBox.Show("This will close the game, are you sure you want to do it now?", "Close?", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.Yes)
             {
-                try
-                {
-                    File.Move(pathforgamefolder + @"\DATA\UI\MOVIES\AMD_IDENT.USM", pathforgamefolder + @"\DATA\UI\MOVIES\AMD_IDENT.USM.bak");
-                }
-                catch { }
 
-                try
-                {
-                    File.Move(pathforgamefolder + @"\DATA\UI\MOVIES\CA_IDENT.USM", pathforgamefolder + @"\DATA\UI\MOVIES\CA_IDENT.USM.bak");
-                }
-                catch { }
+                Process[] proc = Process.GetProcessesByName("AI");
 
-                try
+                foreach (var item in proc)
                 {
-                    File.Move(pathforgamefolder + @"\DATA\UI\MOVIES\FOX_IDENT.USM", pathforgamefolder + @"\DATA\UI\MOVIES\FOX_IDENT.USM.bak");
+                    item.Kill();
+                    item.WaitForExit();
                 }
-                catch { }
 
-                btnDisableIntroMovies.Text = "Enable Intro Movies";
 
-            }
-            else
-            {
-                try
+                if (File.Exists(pathforgamefolder + @"\DATA\UI\MOVIES\AMD_IDENT.USM") || File.Exists(pathforgamefolder + @"\DATA\UI\MOVIES\CA_IDENT.USM") || File.Exists(pathforgamefolder + @"\DATA\UI\MOVIES\FOX_IDENT.USM"))
                 {
-                    File.Move(pathforgamefolder + @"\DATA\UI\MOVIES\AMD_IDENT.USM.bak", pathforgamefolder + @"\DATA\UI\MOVIES\AMD_IDENT.USM");
-                }
-                catch { }
-                try
-                {
-                    File.Move(pathforgamefolder + @"\DATA\UI\MOVIES\CA_IDENT.USM.bak", pathforgamefolder + @"\DATA\UI\MOVIES\CA_IDENT.USM");
-                }
-                catch { }
-                try
-                {
-                    File.Move(pathforgamefolder + @"\DATA\UI\MOVIES\FOX_IDENT.USM.bak", pathforgamefolder + @"\DATA\UI\MOVIES\FOX_IDENT.USM");
-                }
-                catch { }
 
-                btnDisableIntroMovies.Text = "Disable Intro Movies";
+                    try
+                    {
+
+                        File.Copy(pathforgamefolder + @"\DATA\UI\MOVIES\AMD_IDENT.USM", pathforgamefolder + @"\DATA\UI\MOVIES\AMD_IDENT.USM.bak", true);
+                        File.Delete(pathforgamefolder + @"\DATA\UI\MOVIES\AMD_IDENT.USM");
+                    }
+                    catch { }
+
+
+
+                    try
+                    {
+                        File.Copy(pathforgamefolder + @"\DATA\UI\MOVIES\CA_IDENT.USM", pathforgamefolder + @"\DATA\UI\MOVIES\CA_IDENT.USM.bak", true);
+                        File.Delete(pathforgamefolder + @"\DATA\UI\MOVIES\CA_IDENT.USM");
+                    }
+                    catch { }
+
+
+
+                    try
+                    {
+                        File.Copy(pathforgamefolder + @"\DATA\UI\MOVIES\FOX_IDENT.USM", pathforgamefolder + @"\DATA\UI\MOVIES\FOX_IDENT.USM.bak", true);
+                        File.Delete(pathforgamefolder + @"\DATA\UI\MOVIES\FOX_IDENT.USM");
+                    }
+                    catch { }
+
+
+                    btnDisableIntroMovies.Text = "Enable Intro Movies";
+
+                }
+                else
+                {
+                    if (!File.Exists(pathforgamefolder + @"\DATA\UI\MOVIES\AMD_IDENT.USM"))
+                    {
+                        try
+                        {
+                            File.Move(pathforgamefolder + @"\DATA\UI\MOVIES\AMD_IDENT.USM.bak", pathforgamefolder + @"\DATA\UI\MOVIES\AMD_IDENT.USM");
+                        }
+                        catch { }
+                    }
+                    if (!File.Exists(pathforgamefolder + @"\DATA\UI\MOVIES\CA_IDENT.USM"))
+                    {
+                        try
+                        {
+                            File.Move(pathforgamefolder + @"\DATA\UI\MOVIES\CA_IDENT.USM.bak", pathforgamefolder + @"\DATA\UI\MOVIES\CA_IDENT.USM");
+                        }
+                        catch { }
+                    }
+                    if (!File.Exists(pathforgamefolder + @"\DATA\UI\MOVIES\FOX_IDENT.USM"))
+                    {
+                        try
+                        {
+                            File.Move(pathforgamefolder + @"\DATA\UI\MOVIES\FOX_IDENT.USM.bak", pathforgamefolder + @"\DATA\UI\MOVIES\FOX_IDENT.USM");
+                        }
+                        catch { }
+                    }
+
+                    btnDisableIntroMovies.Text = "Disable Intro Movies";
+                }
+
             }
 
         }
@@ -832,6 +890,29 @@ namespace Coach
             return stream;
         }
 
+        private void btnInnocent_Click(object sender, EventArgs e)
+        {
+            string data = GetBehaviorTree(_innocentfile);
+
+            if (data.Contains("NoBehaviour"))
+            {
+                SetBehaviorTree(_innocentfile, "NPC_innocent_behave");
+                btnInnocent.Text = "Disable Civilians (innocent)";
+
+            }
+            else
+            {
+                SetBehaviorTree(_innocentfile, "NoBehaviour");
+                btnInnocent.Text = "Enable Civilians (innocent)";
+
+            }
+
+
+            MessageBox.Show(restartmessage);
+
+            MessageBox.Show("Killing innocent civilians will fail the mission.");
+
+        }
     }
 
 }

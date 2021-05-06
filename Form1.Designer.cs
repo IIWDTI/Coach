@@ -43,6 +43,7 @@
             this.btnDisableIntroMovies = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.btnInnocent = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -169,12 +170,13 @@
             this.btnDisableIntroMovies.Name = "btnDisableIntroMovies";
             this.btnDisableIntroMovies.Size = new System.Drawing.Size(215, 23);
             this.btnDisableIntroMovies.TabIndex = 29;
-            this.btnDisableIntroMovies.Text = "Disable Intro movies";
+            this.btnDisableIntroMovies.Text = "Disable Intro Movies";
             this.btnDisableIntroMovies.UseVisualStyleBackColor = true;
             this.btnDisableIntroMovies.Click += new System.EventHandler(this.btnDisableIntroMovies_Click);
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.btnInnocent);
             this.groupBox1.Controls.Add(this.btnAndroid);
             this.groupBox1.Controls.Add(this.btnAlien);
             this.groupBox1.Controls.Add(this.btnHeavyAndroid);
@@ -184,7 +186,7 @@
             this.groupBox1.Controls.Add(this.btnRiotGuards);
             this.groupBox1.Location = new System.Drawing.Point(13, 231);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(229, 296);
+            this.groupBox1.Size = new System.Drawing.Size(229, 336);
             this.groupBox1.TabIndex = 30;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "AI";
@@ -203,18 +205,28 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Other";
             // 
+            // btnInnocent
+            // 
+            this.btnInnocent.Location = new System.Drawing.Point(7, 300);
+            this.btnInnocent.Name = "btnInnocent";
+            this.btnInnocent.Size = new System.Drawing.Size(215, 23);
+            this.btnInnocent.TabIndex = 28;
+            this.btnInnocent.Text = "Disable Civilians (innocent)";
+            this.btnInnocent.UseVisualStyleBackColor = true;
+            this.btnInnocent.Click += new System.EventHandler(this.btnInnocent_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(256, 541);
+            this.ClientSize = new System.Drawing.Size(256, 575);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "AI v1.5";
+            this.Text = "AI v1.5.1";
             this.groupBox1.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -237,6 +249,7 @@
         private System.Windows.Forms.Button btnDisableIntroMovies;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.Button btnInnocent;
     }
 }
 
