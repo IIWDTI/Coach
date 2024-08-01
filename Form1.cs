@@ -10,7 +10,7 @@ namespace Coach
     public partial class Form1 : Form
     {
         //MD5 hash
-        string SteamHash = "bb0d932f267c0ce1b1045e68a3d12ffb"; //Steam version x.x
+        string SteamHash = "bb0d932f267c0ce1b1045e68a3d12ffb"; //Steam Build ID: 4940658
         string EpicHash1 = "1d91aa77a1fdb86673a501696c8ad23c"; //EPIC STORE Version x.x
         string currenthash = "";
 
