@@ -1,4 +1,4 @@
-﻿namespace Coach
+namespace Coach
 {
     partial class Form1
     {
@@ -42,8 +42,8 @@
             this.btnEnableGasMask = new System.Windows.Forms.Button();
             this.btnDisableIntroMovies = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.btnInnocent = new System.Windows.Forms.Button();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -191,6 +191,16 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "AI";
             // 
+            // btnInnocent
+            // 
+            this.btnInnocent.Location = new System.Drawing.Point(7, 300);
+            this.btnInnocent.Name = "btnInnocent";
+            this.btnInnocent.Size = new System.Drawing.Size(215, 23);
+            this.btnInnocent.TabIndex = 28;
+            this.btnInnocent.Text = "Disable Civilians (innocent)";
+            this.btnInnocent.UseVisualStyleBackColor = true;
+            this.btnInnocent.Click += new System.EventHandler(this.btnInnocent_Click);
+            // 
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.btnDisableIntroMovies);
@@ -205,16 +215,6 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Other";
             // 
-            // btnInnocent
-            // 
-            this.btnInnocent.Location = new System.Drawing.Point(7, 300);
-            this.btnInnocent.Name = "btnInnocent";
-            this.btnInnocent.Size = new System.Drawing.Size(215, 23);
-            this.btnInnocent.TabIndex = 28;
-            this.btnInnocent.Text = "Disable Civilians (innocent)";
-            this.btnInnocent.UseVisualStyleBackColor = true;
-            this.btnInnocent.Click += new System.EventHandler(this.btnInnocent_Click);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -226,7 +226,7 @@
             this.MaximizeBox = false;
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "AI v1.5.1";
+            this.Text = "AI v1.5.2";
             this.groupBox1.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.ResumeLayout(false);
