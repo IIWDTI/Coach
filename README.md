@@ -27,6 +27,7 @@ All other enemies will just stand still, they can be killed and looted. Idle and
 * In mission 10, If the Civilians have been disabled, In the start of the mission, the game will not load, Enable Civilians go back to main menu, and load the chapter again, civilians can be disabled later.
 
 ###### Requirements:
+* Run as Administrator
 * Steam version of the game, works with the latest version as of "june 8th 2019".
 * The tool is NOT tested with a cracked version of the game, this might not work, neither will i support it.
 * There might be problems with other tools and/or mods, a clean installation of the game is preferred.
