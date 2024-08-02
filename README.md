@@ -28,6 +28,6 @@ All other enemies will just stand still, they can be killed and looted. Idle and
 
 ###### Requirements:
 * Run as Administrator
-* Steam version of the game, works with the latest version as of "june 8th 2019".
+* Steam and EPIC version of the game, works with the latest version as of "Auguest 2nd 2024".
 * The tool is NOT tested with a cracked version of the game, this might not work, neither will i support it.
 * There might be problems with other tools and/or mods, a clean installation of the game is preferred.
